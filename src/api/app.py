@@ -39,6 +39,9 @@ def search():
             if c in string.digits:
                 phone_number += c
 
+        if not phone_number or len(phone_number) < 6:
+            raise ValueError()
+
         phone_number = int(phone_number)
     except ValueError:
         Stats.add_invalid()

@@ -96,15 +96,15 @@ class SQLiteAccount(sqlite.Entity):
 
     @property
     def censored_first_name(self):
-        asterisks = len(self.first_name) - 2
+        asterisks = len(self.first_name) - 1
 
-        return self.first_name[0] + ('*' * asterisks) + self.first_name[-1]
+        return self.first_name[0] + ('*' * asterisks)
 
     @property
     def censored_last_name(self):
-        asterisks = len(self.last_name) - 2
+        asterisks = len(self.last_name) - 1
 
-        return self.last_name[0] + ('*' * asterisks) + self.last_name[-1]
+        return self.last_name[0] + ('*' * asterisks)
 
     def dictize(self):
         return {
