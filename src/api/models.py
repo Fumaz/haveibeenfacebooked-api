@@ -70,8 +70,8 @@ class Stats(postgres.Entity):
 
     @staticmethod
     @db_session
-    def add_invalid():
-        Stats.get(name='invalid').value += 1
+    def increment(name):
+        Stats.get(name=name).value += 1
 
 
 # TEMPORARY

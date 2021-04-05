@@ -24,40 +24,33 @@ def search():
         phone_number = request.args.get('phone_number', None)
 
     if not ip_address:
-        Stats.add_invalid()
+        Stats.increment('invalid')
         return jsonify(ok=False, reason='ip', message='Invalid IP Address. (Are you a bot?)')
 
     if cooldown.get(ip_address, datetime.min) > datetime.now():
-        Stats.add_invalid()
+        Stats.increment('invalid')
         return jsonify(ok=False, reason='flood', message='Slow down! Too many requests.')
 
     if not phone_number or not phone_number.startswith('+'):
-        Stats.add_invalid()
+        Stats.increment('invalid')
         return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
 
     try:
-        temp_phone = phone_number
-        phone_number = ""
-        for c in temp_phone:
-            if c in string.digits:
-                phone_number += c
+        phone_number = ''.join([c for c in phone_number if c in string.digits])
 
         if not phone_number or len(phone_number) < 6:
             raise ValueError()
 
         phone_number = int(phone_number)
     except ValueError:
-        Stats.add_invalid()
+        Stats.increment('invalid')
         return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
 
     cooldown[ip_address] = datetime.now() + timedelta(seconds=2)
 
     with db_session:
+        Stats.increment('requests')
         account = SQLiteAccount.find(phone_number=phone_number)
-
-        stats = Stats.get(name='requests')
-        stats.value += 1
-        commit()
 
         if not account:
             return jsonify(ok=True, found=False, data={})
