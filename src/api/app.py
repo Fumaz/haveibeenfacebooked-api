@@ -15,10 +15,13 @@ log.disabled = True
 cooldown = {}
 
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     ip_address = request.headers.get('CF-Connecting-IP', None)
-    phone_number = request.args.get('phone_number', None)
+    if request.method == 'POST':
+        phone_number = request.values.get('phone_number', None)
+    else:
+        phone_number = request.args.get('phone_number', None)
 
     if not ip_address:
         Stats.add_invalid()
