@@ -1,4 +1,3 @@
-import logging
 from datetime import timedelta, datetime
 
 from flask import Flask, request, jsonify
@@ -6,38 +5,31 @@ from flask import Flask, request, jsonify
 from .models import *
 
 app = Flask(__name__)
-app.logger.disabled = True
-
-log = logging.getLogger('werkzeug')
-log.disabled = True
-
 cooldown = {}
+
+
+@app.errorhandler(404)
+def not_found():
+    return jsonify(ok=True, message='What do you think you\'re doing?')
 
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     ip_address = request.headers.get('CF-Connecting-IP', None)
-    if request.method == 'POST':
-        phone_number = request.values.get('phone_number', None)
-    else:
-        phone_number = request.args.get('phone_number', None)
+    phone_number = (request.values if request.method == 'POST' else request.args).get('phone_number', None)
 
     if not ip_address:
-        Stats.increment('invalid')
         return jsonify(ok=False, reason='ip', message='Invalid IP Address. (Are you a bot?)')
 
     if cooldown.get(ip_address, datetime.min) > datetime.now():
-        Stats.increment('invalid')
         return jsonify(ok=False, reason='flood', message='Slow down! Too many requests.')
 
     if not phone_number:
-        Stats.increment('invalid')
         return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
 
-    cooldown[ip_address] = datetime.now() + timedelta(seconds=2)
+    cooldown[ip_address] = datetime.now() + timedelta(seconds=3)
 
     with db_session:
-        Stats.increment('requests')
         account = Account.find(phone_number=phone_number)
 
         if not account:
@@ -48,7 +40,8 @@ def search():
 
 @app.after_request
 def add_header(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = 'https://haveibeenfacebooked.com'
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
     return response
 
 
