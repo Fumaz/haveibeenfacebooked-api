@@ -1,6 +1,5 @@
 import logging
-import string
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from flask import Flask, request, jsonify
 
@@ -31,18 +30,7 @@ def search():
         Stats.increment('invalid')
         return jsonify(ok=False, reason='flood', message='Slow down! Too many requests.')
 
-    if not phone_number or not phone_number.startswith('+'):
-        Stats.increment('invalid')
-        return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
-
-    try:
-        phone_number = ''.join([c for c in phone_number if c in string.digits])
-
-        if not phone_number or len(phone_number) < 6:
-            raise ValueError()
-
-        phone_number = int(phone_number)
-    except ValueError:
+    if not phone_number or len(phone_number.encode('utf-8')) != 256:
         Stats.increment('invalid')
         return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
 
