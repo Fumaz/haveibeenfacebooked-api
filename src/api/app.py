@@ -30,7 +30,7 @@ def search():
         Stats.increment('invalid')
         return jsonify(ok=False, reason='flood', message='Slow down! Too many requests.')
 
-    if not phone_number or len(phone_number.encode('utf-8')) != 256:
+    if not phone_number:
         Stats.increment('invalid')
         return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
 
@@ -38,7 +38,7 @@ def search():
 
     with db_session:
         Stats.increment('requests')
-        account = SQLiteAccount.find(phone_number=phone_number)
+        account = Account.find(phone_number=phone_number)
 
         if not account:
             return jsonify(ok=True, found=False, data={})
