@@ -15,19 +15,18 @@ def not_found():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    ip_address = request.headers.get('CF-Connecting-IP', None)
     phone_number = (request.values if request.method == 'POST' else request.args).get('phone_number', None)
 
-    if not ip_address:
-        return jsonify(ok=False, reason='ip', message='Invalid IP Address. (Are you a bot?)')
+    # if not ip_address:
+        # return jsonify(ok=False, reason='ip', message='Invalid IP Address. (Are you a bot?)')
 
-    if cooldown.get(ip_address, datetime.min) > datetime.now():
-        return jsonify(ok=False, reason='flood', message='Slow down! Too many requests.')
+    #if cooldown.get(ip_address, datetime.min) > datetime.now():
+    #    return jsonify(ok=False, reason='flood', message='Slow down! Too many requests.')
 
     if not phone_number:
         return jsonify(ok=False, reason='arguments', message='Invalid Phone Number.')
 
-    cooldown[ip_address] = datetime.now() + timedelta(seconds=3)
+    # cooldown[ip_address] = datetime.now() + timedelta(seconds=3)
 
     with db_session:
         account = Account.find(phone_number=phone_number)
