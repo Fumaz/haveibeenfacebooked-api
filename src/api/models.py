@@ -40,7 +40,8 @@ class Stats(sqlite.Entity):
 
 class Account(sqlite.Entity):
     _table_ = 'account'
-    phone_number = Required(str, unique=True)
+    ROWID = PrimaryKey(int, auto=True)
+    phone_number = Required(str, index=True)
     facebook_id = Required(int, size=64)
     first_name = Optional(str)
     last_name = Optional(str)
@@ -59,7 +60,7 @@ class Account(sqlite.Entity):
     def dictize(self):
         return {
             'first_name': self.first_name,
-            'last_name': self.first_name,
+            'last_name': self.last_name,
             'gender': self.gender,
             'relationship_status': self.relationship_status,
             'location': self.location,
@@ -76,4 +77,4 @@ def setup():
 
     # temporarily needs to use sqlite for the accounts (still migrating to postgres)
     sqlite.bind(provider='sqlite', filename='/usr/src/app/database.sqlite')
-    sqlite.generate_mapping(create_tables=True)
+    sqlite.generate_mapping()
