@@ -9,7 +9,7 @@ cooldown = {}
 
 
 @app.errorhandler(404)
-def not_found():
+def not_found(e):
     return jsonify(ok=True, message='What do you think you\'re doing?')
 
 
