@@ -1,3 +1,2 @@
-psycopg2-binary
-pony
-flask
+sanic
+aiosqlite
