@@ -50,10 +50,5 @@ async def add_headers(_, response):
     response.headers['Access-Control-Allow-Methods'] = 'POST'
 
 
-@app.get('/loaderio-d029151933cbc7cbc62e62092d5cfb86.html')
-async def verification(request):
-    return text('loaderio-d029151933cbc7cbc62e62092d5cfb86')
-
-
 def run():
     app.run(host='127.0.0.1', port=5000, debug=True)
